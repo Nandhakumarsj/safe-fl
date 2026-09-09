@@ -46,7 +46,7 @@ def _load_ring_spmv():
                 os.path.join(_THIS_DIR, "ring_spmv_kernel.cu"),
                 os.path.join(_THIS_DIR, "ring_spmv_binding.cpp"),
             ],
-            extra_cuda_cflags=["-O3", "--use_fast_math"],
+            extra_cuda_cflags=["-O3", "--use_fast_math", "--allow-unsupported-compiler"],
             verbose=False,
         )
     except Exception as exc:

@@ -18,7 +18,7 @@ ext_modules = []
 cmdclass = {}
 
 if CUDA_AVAILABLE and CUDAExtension is not None:
-    nvcc_flags = ["-O3", "--use_fast_math"]
+    nvcc_flags = ["-O3", "--use_fast_math", "--allow-unsupported-compiler"]
     cxx_flags = ["-O3"]
     if os.name == "nt":
         cxx_flags = ["/O2"]
