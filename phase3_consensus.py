@@ -1,4 +1,5 @@
 import os
+import shutil
 import warnings
 
 import torch
@@ -7,8 +8,35 @@ from torch.utils.cpp_extension import load
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def _load_extension():
+def _has_host_compiler():
     if not torch.cuda.is_available():
+        return False
+    if shutil.which("ninja") is None:
+        return False
+    if os.name == "nt":
+        return shutil.which("cl") is not None
+    return shutil.which("g++") is not None or shutil.which("clang++") is not None
+
+
+def _load_extension():
+    # 1. Check if extension was pre-compiled (e.g. via setup.py or Docker build)
+    try:
+        import consensus_cuda
+        return consensus_cuda
+    except ImportError:
+        pass
+
+    if not torch.cuda.is_available():
+        return None
+
+    # 2. Check if C++ compiler and ninja are in PATH to avoid internal subprocess WinError
+    if not _has_host_compiler():
+        # Informative note without dumping scary Win32 process tracebacks
+        warnings.warn(
+            "CUDA C++ compiler (cl/g++) or ninja not found in PATH. "
+            "Falling back to PyTorch GPU median consensus. "
+            "(To compile custom CUDA kernels, use the provided Docker container or install C++ build tools)."
+        )
         return None
 
     try:
