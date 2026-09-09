@@ -8,3 +8,9 @@ dist/
 .pytest_cache/
 .DS_Store
 *.log
+venv/
+env/
+.vscode/
+.idea/
+*.png
+*.pdf
